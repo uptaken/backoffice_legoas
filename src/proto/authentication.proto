@@ -1,0 +1,204 @@
+syntax = "proto3";
+
+package authentication;
+
+option go_package = "gitlab.com/legoas-development/gate-proto/golang/v1/authentication";
+
+import "google/api/annotations.proto";
+
+message RequestRegister {
+    string username = 1;
+    string email = 2;
+    string phone = 3;
+    string password = 4;
+}
+
+message RequestPreRegister {
+    string email = 1;
+    string phone = 2;
+}
+
+message RequestCustomerLogin {
+    string unique = 1;
+    string password = 2;
+}
+
+message RequestCustomerLoginVerify {
+    string otp = 1;
+}
+
+message RequestAdminLogin {
+    string unique = 1;
+    string password = 2;
+}
+
+message Response {
+    int32 code = 1;
+    string message = 2;
+}
+
+message RequestAnonymous {
+    string partner_code = 1;
+}
+
+message RequestProfile {}
+
+message ResponseProfileCustomer {
+    string id = 1;
+    string fullname = 2;
+    string username = 3;
+    string email = 4;
+    string phone = 5;
+    bool is_login = 6;
+    bool is_complete_priofile = 7;
+}
+
+message ResponseProfileAdmin {
+    string id = 1;
+    string fullname = 2;
+    string username = 3;
+    string email = 4;
+    string phone = 5;
+    bool is_login = 6;
+    string session_role = 7;
+}
+
+message RequestResetPassword {
+    string email = 1;
+}
+
+message RequestVerify {
+    string otp = 1;
+}
+
+message RequestChangePassword {
+    string password = 1;
+    string retype_password = 2;
+}
+
+message RequestSessionRole {
+    string id = 1;
+}
+
+message RequestVerifyAccount {
+    string user_id = 1;
+}
+
+message ResponseMainMenu {
+    string as_login = 1;
+    repeated MainMenu main_menu = 2;
+}
+
+message MainMenu {
+    string id = 1;
+    string menu_name = 2;
+    string menu_url = 3;
+    string menu_icon = 4;
+    repeated ChildMenu child_menu = 5;
+}
+
+message ChildMenu {
+    string id = 1;
+    string menu_name = 2;
+    string menu_url = 3;
+    string menu_icon = 4;
+}
+
+service AuthenticationService {
+    rpc PreRegister (RequestPreRegister) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/authentication/pre-register"
+            body: "*"
+        };
+    }
+
+    rpc Register (RequestRegister) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/authentication/register"
+            body: "*"
+        };
+    }
+
+    rpc CustomerLogin (RequestCustomerLogin) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/customer/login"
+            body: "*"
+        };
+    }
+
+    rpc CustomerLoginVerify (RequestCustomerLoginVerify) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/customer/login/verify"
+            body: "*"
+        };
+    }
+
+    rpc AdminLogin (RequestAdminLogin) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/admin/login"
+            body: "*"
+        };
+    }
+
+    rpc AnonymousToken (RequestAnonymous) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/authentication/anonymous/{partner_code}"
+            body: "*"
+        };
+    }
+
+    rpc SessionRole (RequestSessionRole) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/admin/session/role" 
+            body: "*"
+        };
+    }
+
+    rpc MainMenu (RequestProfile) returns (ResponseMainMenu) {
+        option (google.api.http) = {
+            post: "/v1/admin/main/menu" 
+            body: "*"
+        };
+    }
+
+    rpc ProfileCustomer (RequestProfile) returns (ResponseProfileCustomer) {
+        option (google.api.http) = {
+            get: "/v1/customer/profile"
+        };
+    }
+
+    rpc ProfileAdmin (RequestProfile) returns (ResponseProfileAdmin) {
+        option (google.api.http) = {
+            get: "/v1/admin/profile"
+        };
+    }
+
+    rpc ResetPassword (RequestResetPassword) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/admin/reset/password"
+            body: "*"
+        };
+    }
+
+    rpc Verify (RequestVerify) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/admin/verify/otp"
+            body: "*"
+        };
+    }
+
+    rpc VerifyAccount (RequestVerifyAccount) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/admin/verify/{user_id}"
+            body: "*"
+        };
+    }
+
+    rpc ChangePassword (RequestChangePassword) returns (Response) {
+        option (google.api.http) = {
+            post: "/v1/admin/change/password" 
+            body: "*"
+        };
+    }
+    
+}

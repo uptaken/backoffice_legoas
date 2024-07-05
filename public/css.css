@@ -1,0 +1,69 @@
+@font-face {
+  src: url("../fonts/Poppins-Regular.ttf") format("truetype");
+  font-family: "Poppins";
+}
+html, body {
+  font-family: "Poppins";
+}
+
+.ck.ck-editor__main > .ck-editor__editable.ck-read-only {
+  background: #eff2f7 !important;
+  color: #74788d !important;
+}
+
+.quill-editor > .ql-disabled {
+  background: #eff2f7 !important;
+  color: #74788d !important;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+  background: #eff2f7 !important;
+  color: #74788d !important;
+}
+
+#editor-container {
+  height: 375px;
+}
+
+.ql-color .ql-picker-options [data-value=color-picker]:before {
+  content: "Pick Color";
+}
+
+.ql-color .ql-picker-options [data-value=color-picker] {
+  background: none !important;
+  width: 100% !important;
+  height: 25px !important;
+  text-align: center;
+  color: blue;
+  text-decoration: underline;
+}
+
+.ql-editor .ql-size-large {
+  font-size: 72px !important;
+}
+
+.ql-editor .ql-size-huge {
+  font-size: 84px !important;
+}
+
+/* .ql-snow .ql-picker.ql-size .ql-picker-label[data-value=large]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=large]::before {
+    content: 72px !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=huge]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=huge]::before {
+    content: 84px !important;
+}
+
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=large]::before {
+    font-size: 72px !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=huge]::before {
+    font-size: 84px !important;
+} */
+
+/*# sourceMappingURL=css.css.map */

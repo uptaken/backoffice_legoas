@@ -1,0 +1,265 @@
+$font_path : '../fonts';
+
+@font-face {
+    src: url("#{$font_path}/Poppins-Regular.ttf") format("truetype");
+
+    font-family: "Poppins";
+}
+
+@font-face {
+    src: url("#{$font_path}/Overpass-Regular.ttf") format("truetype");
+
+    font-family: "Overpass";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Black.ttf") format("truetype");
+
+    font-family: "Poppins-Black";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-BlackItalic.ttf") format("truetype");
+
+    font-family: "Poppins-BlackItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Bold.ttf") format("truetype");
+
+    font-family: "Poppins-Bold";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-BoldItalic.ttf") format("truetype");
+
+    font-family: "Poppins-BoldItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-ExtraBold.ttf") format("truetype");
+
+    font-family: "Poppins-ExtraBold";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-ExtraBoldItalic.ttf") format("truetype");
+
+    font-family: "Poppins-ExtraBoldItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-ExtraLight.ttf") format("truetype");
+
+    font-family: "Poppins-ExtraLight";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-ExtraLightItalic.ttf") format("truetype");
+
+    font-family: "Poppins-ExtraLightItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Italic.ttf") format("truetype");
+
+    font-family: "Poppins-Italic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Light.ttf") format("truetype");
+
+    font-family: "Poppins-Light";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-LightItalic.ttf") format("truetype");
+
+    font-family: "Poppins-LightItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Medium.ttf") format("truetype");
+
+    font-family: "Poppins-Medium";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-MediumItalic.ttf") format("truetype");
+
+    font-family: "Poppins-MediumItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Regular.ttf") format("truetype");
+
+    font-family: "Poppins-Regular";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-SemiBold.ttf") format("truetype");
+
+    font-family: "Poppins-SemiBold";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-SemiBoldItalic.ttf") format("truetype");
+
+    font-family: "Poppins-SemiBoldItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-Thin.ttf") format("truetype");
+
+    font-family: "Poppins-Thin";
+}
+
+@font-face {
+    src: url("#{$font_path}/Poppins/Poppins-ThinItalic.ttf") format("truetype");
+
+    font-family: "Poppins-ThinItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Impact/impact.ttf") format("truetype");
+
+    font-family: "impact";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamBold.ttf") format("truetype");
+
+    font-family: "GothamBold";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamBoldItalic.ttf") format("truetype");
+
+    font-family: "GothamBoldItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamBook.ttf") format("truetype");
+
+    font-family: "GothamBook";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamBookItalic.ttf") format("truetype");
+
+    font-family: "GothamBookItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamLight.ttf") format("truetype");
+
+    font-family: "GothamLight";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamLightItalic.ttf") format("truetype");
+
+    font-family: "GothamLightItalic";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamMedium.ttf") format("truetype");
+
+    font-family: "GothamMedium";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamMedium_1.ttf") format("truetype");
+
+    font-family: "GothamMedium_1";
+}
+
+@font-face {
+    src: url("#{$font_path}/Gotham/GothamMediumItalic.ttf") format("truetype");
+
+    font-family: "GothamMediumItalic";
+}
+
+
+html,
+body {
+    font-family: "Poppins" !important;
+    &.cke_editable{
+        margin: 8px;
+    }
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+label {
+    font-family: "Poppins" !important;
+}
+
+.ck.ck-editor__main>.ck-editor__editable.ck-read-only {
+    background: #eff2f7 !important;
+    color: #74788d !important;
+}
+
+.cke_contents {
+    font-family: 'Overpass, Poppins-Black, Poppins-BlackItalic, Poppins-Bold, Poppins-BoldItalic, Poppins-ExtraBold, Poppins-ExtraBoldItalic, Poppins-ExtraLight, Poppins-ExtraLightItalic, Poppins-Italic, Poppins-Light, Poppins-LightItalic, Poppins-Medium, Poppins-MediumItalic, Poppins-Regular, Poppins-SemiBold, Poppins-SemiBoldItalic, Poppins-Thin, Poppins-ThinItalic, impact, GothamBold, GothamBoldItalic, GothamBook, GothamBookItalic, GothamLight, GothamLightItalic, GothamMedium, GothamMedium_1, GothamMediumItalic', sans-serif;
+}
+
+.quill-editor>.ql-disabled {
+    background: #eff2f7 !important;
+    color: #74788d !important;
+}
+
+.form-control:disabled,
+.form-control[readonly] {
+    background: #eff2f7 !important;
+    color: #74788d !important;
+}
+
+#editor-container {
+    height: 375px;
+}
+
+.ql-color .ql-picker-options [data-value=color-picker]:before {
+    content: 'Pick Color';
+}
+
+.ql-color .ql-picker-options [data-value=color-picker] {
+    background: none !important;
+    width: 100% !important;
+    height: 25px !important;
+    text-align: center;
+    color: blue;
+    text-decoration: underline;
+}
+
+.ql-editor .ql-size-large {
+    font-size: 72px !important;
+}
+
+.ql-editor .ql-size-huge {
+    font-size: 84px !important;
+}
+
+/* .ql-snow .ql-picker.ql-size .ql-picker-label[data-value=large]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=large]::before {
+    content: 72px !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value=huge]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=huge]::before {
+    content: 84px !important;
+}
+
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=large]::before {
+    font-size: 72px !important;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value=huge]::before {
+    font-size: 84px !important;
+} */
