@@ -2,7 +2,7 @@
 import simplebar from "simplebar-vue";
 import { layoutComputed } from "@/state/helpers";
 
-import MetisMenu from "metismenujs/dist/metismenujs";
+// import MetisMenu from "metismenujs/dist/metismenujs";
 
 import { menuItems } from "./menu";
 
@@ -37,7 +37,7 @@ export default {
   },
   mounted: function () {
     // eslint-disable-next-line no-unused-vars
-    var menuRef = new MetisMenu("#side-menu");
+    // var menuRef = new MetisMenu("#side-menu");
     var links = document.getElementsByClassName("side-nav-link-ref");
     var matchingMenuItem = null;
     for (var i = 0; i < links.length; i++) {

@@ -17,6 +17,7 @@ export default {
 				{ value: '' },
 			],
 			index: -1,
+			resendTimeLeft: 30,
     };
   },
 	watch: {
@@ -37,6 +38,12 @@ export default {
 	},
   created() {
 		this.base = new Base()
+		
+		var context = this
+		setInterval(() => {
+			if(context.resendTimeLeft > 0)
+				context.resendTimeLeft--
+		}, 1000)
   },
   methods: {
 		onKeyUp(e, index){
@@ -65,6 +72,9 @@ export default {
 				this.$router.push({ name: "Choose Role" })
 			}
 		},
+		onResend(){
+			this.resendTimeLeft = 30
+		},
   }
 };
 </script>
@@ -83,6 +93,11 @@ export default {
 							<div v-for="(otp, index) in arrOTP" :key="index" :class="{'mr-3': index < arrOTP.length - 1}" :style="{'width': (100 / arrOTP.length) + '%'}" >
 								<input type="number" v-model="otp.value" class="form-control w-100 text-center" :index="index" :ref="'inputOTP' + index" @keyup="onKeyUp($event, index)"/>
 							</div>
+						</div>
+						
+						<div class="mb-3">
+							<p class="w-100 text-center m-0" v-show="resendTimeLeft > 0">Kirim ulang kode aktivasi dalam waktu {{resendTimeLeft}} detik</p>
+							<button class="btn btn-primary w-100" @click="onResend" v-show="resendTimeLeft == 0">Kirim Ulang OTP</button>
 						</div>
 						
 						<div>

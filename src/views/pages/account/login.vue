@@ -41,7 +41,7 @@ export default {
     // }
     // await localStorage.clear()
     document.body.classList.add("auth-body-bg");
-		this.test_grpc()
+		this.test_grpc1()
   },
   validations: {
     email: { required, email },
@@ -52,7 +52,7 @@ export default {
     ...authFackMethods,
     ...notificationMethods,
 		async test_grpc(){
-			var client = new AuthenticationServiceClient('http://20.198.220.250:7021', null, null);
+			var client = new AuthenticationServiceClient('http://20.198.220.250:50052', null, null);
 			const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
 			enableDevTools([
 				client,
@@ -81,7 +81,7 @@ export default {
 		
 			
 			var request = new HelloRequest();
-			request.setName('World bmqbebqwe');
+			request.setName('World bmqbebqwe qeqweq');
 			
 			client.sayHello(request, {
 				Authorization: 'Basic YXV0aGVudGljYXRpb246c3VwZXJzZWNyZXQ=',

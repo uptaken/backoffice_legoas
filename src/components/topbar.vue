@@ -123,7 +123,7 @@ export default {
             </span>
           </a> -->
           <a href="#!" class="logo">
-            <h3 class="m-0 text-primary">Backoffice Legoas</h3>
+            <h3 class="m-0 text-primary text-center">Backoffice Legoas</h3>
           </a>
         </div>
 
