@@ -28,9 +28,11 @@
 			</div>
 
       <table class="table w-100 my-3" ref="table">
+
         <thead>
           <tr>
 						<th style="width: 1%"><input type="checkbox"  @change="onSelectAllClicked" :checked="is_checked_all"/></th>
+
             <th v-for="(field, index) in fields" :key="index">
 							<div class="d-flex justify-content-between align-items-center" style="cursor: pointer;" @click="onSortClicked(index)">
 								{{ field.text }}
@@ -39,17 +41,21 @@
 						</th>
           </tr>
         </thead>
+
 				<tbody v-if="arr.length > 0">
 					<tr v-for="(data, index1) in arr" :key="index1">
 						<td><input type="checkbox" class="" @change="onSelectClicked(index1)" :checked="data.is_checked"/></td>
+
 						<td v-for="(field, index2) in fields" :key="index2">{{ field.max_char != null ? data[field.id].substring(0, field.max_char) + (data[field.id].length > field.max_char ? '...' : '') : data[field.id] }}</td>
 					</tr>
 				</tbody>
+
 				<tbody v-else>
 					<tr>
 						<td :colspan="fields.length + 1" class="text-center">No Data</td>
 					</tr>
 				</tbody>
+
       </table>
 
 			<div class="d-flex justify-content-between">
@@ -111,6 +117,7 @@ export default {
     };
   },
   watch: {
+		// when choose action triggered
 		async action(val){
 			if(val == 'add'){
 				this.data_edit = {}
@@ -119,6 +126,7 @@ export default {
 			}
 			else if(val == 'edit' || val == 'delete'){
 				var counter = 0
+				// check data selected
 				for(let x in this.arr){
 					if(this.arr[x].is_checked){
 						this.data_edit = this.arr[x]
@@ -161,29 +169,33 @@ export default {
 			}
 			this.action = ''
 		},
+		// when per page changed
 		perPage(){
 			this.get_data()
 		},
+		// when page changed
 		currentPage(){
 			this.get_data()
 		},
+		// when search typed
 		search(){
 			this.get_data()
 		},
+		// when advanced search triggered
 		arrAdvancedSearch: {
 			handler(newValue, oldValue) {
 				this.get_data()
 			},
 			deep: true
-
 		},
+		// when sort triggered
 		arr_sort: {
 			handler(newValue, oldValue) {
 				this.get_data()
 			},
 			deep: true
-
 		},
+		// when realm web collection set
 		async collectionObj(val){
 			if(val != null){
 				var context = this
@@ -308,7 +320,6 @@ export default {
 			if(this.index_edit >= 0)
 				arr[this.index_edit].is_checked = false
 
-			console.log(arr_form._id)
 			if(arr_form._id == null || arr_form._id == ""){
 				delete arr_form._id
 				for(let field of this.fields){
@@ -338,6 +349,8 @@ export default {
 			var arr_advanced_search = []
 			var arr_sort = {}
 			var sort_flag = false
+
+			// check for search
 			if(this.search != ''){
 				for(let field of this.fields){
 					var global_search = {}
@@ -347,6 +360,7 @@ export default {
 				query.$or = arr_global_search
 			}
 
+			// check for sort data
 			for(let x in this.arr_sort){
 				if(this.arr_sort[x] != 'none'){
 					arr_sort[x] = this.arr_sort[x] == 'asc' ? 1 : -1
@@ -354,6 +368,7 @@ export default {
 				}
 			}
 
+			// check for advanced search
 			for(let x in this.arrAdvancedSearch){
 				if(this.arrAdvancedSearch[x] != ''){
 					var advanced_search = {}
@@ -364,6 +379,7 @@ export default {
 				}
 			}
 
+			// prepare for query, sort, and pagination for realm sdk
 			var pipeline = [
 				{ $match: query, },
 				{ $skip: (this.currentPage - 1) * this.perPage, },
@@ -373,6 +389,7 @@ export default {
 				pipeline.push({ $sort: arr_sort },)
 			var arr = await this.collectionObj.aggregate(pipeline)
 
+			// get total data queried
 			var totalRows = await this.collectionObj.aggregate([
 				{ $match: query, },
 				{ $count: "Total" },
@@ -380,7 +397,7 @@ export default {
 			this.totalRows = totalRows.length > 0 ? totalRows[0].Total : 0
 
 
-
+			// manage data generated
 			for(let data of arr){
 				for(let field of this.fields){
 					if(field.type == 'json')
@@ -390,11 +407,7 @@ export default {
 						var foreignCollectionObj = mongo.db(field.db).collection(field.collection)
 
 						var arr_foreign = await foreignCollectionObj.aggregate([
-							{
-								$match: {
-									_id: data[field.id],
-								},
-							},
+							{ $match: { _id: data[field.id], }, },
 						])
 						data[field.id] = arr_foreign[0][field.foreign_column_name]
 					}
