@@ -198,9 +198,7 @@ export default {
                     flag = true
                   
                   if(flag){
-                    var temp = {
-                      id: row.id,
-                    }
+                    var temp = row
                     str += `
                       <button key="${index}" row='${JSON.stringify(temp)}' class="${context.arr_action_button[index].icon != null ? 'rounded-circle' : 'btn d-inline-block'} mr-2 action-button${context.id} ${context.arr_action_button[index].class_button}">`
                     if(context.arr_action_button[index].icon != null)
@@ -276,14 +274,13 @@ export default {
     },
     onTopButtonClicked(index){},
     onActionClicked(row, action_button_index){
-      var data_index = -1
-      for(let x in this.tableData){
-        if(row.item.id == this.tableData[x].id){
-          data_index = x
-          break
-        }
-      }
-      console.log(row)
+      // var data_index = -1
+      // for(let x in this.tableData){
+      //   if(row.item.id == this.tableData[x].id){
+      //     data_index = x
+      //     break
+      //   }
+      // }
 
       this.$emit('onActionClicked', row, action_button_index,)
     },

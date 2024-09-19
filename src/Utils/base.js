@@ -1,11 +1,14 @@
 import axios from 'axios'
 import moment from 'moment'
 import $ from 'jquery'
+import * as Realm from "realm-web"
 
 export default class Base {
 	host = "https://venust-api.quantumtri.com"
+	url_api1 = ''
 	// host = "https://student-open-api.quantumtri.com"
 	// host = ""
+	authorization = "Basic YXV0aGVudGljYXRpb246c3VwZXJzZWNyZXQ="
 	url_api = this.host + "/api"
 	version = ""
 	locale_string = "id-ID"
@@ -17,6 +20,20 @@ export default class Base {
 	thread_total = 3
 	date_format = 'DD-MM-YYYY'
 	arr_lang_manual = []
+	app_version = "0.0.0001"
+
+	// mongodb_app_id = "application-0-viofrzf"
+	// mongodb_token = ""
+	// mongodb_user_email = "jbuwono@gmail.com"
+	// mongodb_user_password = "123456789"
+	// mongodb_service_name = "TestServiceName"
+
+	mongodb_app_id = "fe-backoffice-ivuwfdf"
+	// mongodb_token = "tBWH7QzbGoYcE6wYQyalbzEVA8J5uXb8NGTKnFlHb5phEfYEOY7qfmEBjAYHVTvn"
+	mongodb_token = "FERrKK877KxNOBiX3ArYxpL4hMgYqNdILEZAZWb5dN615pbjfQh8IEdyMOvc5u7s"
+	mongodb_user_email = ""
+	mongodb_user_password = ""
+	mongodb_service_name = "mongodb-atlas"
 
 	no_profile_picture = require('../assets/png/no_profile_picture.png');
 	img_500x300 = require('../assets/png/img_500x300.png');
@@ -45,32 +62,53 @@ export default class Base {
 		// console.log(window.location.origin)
 		if(window.location.origin == "https://venust.com"){
       this.host = "https://venust-api.quantumtri.com"
+			this.url_api1 = "https://gatewaydemo.legoas.co.id/v1"
       this.url_api = this.host + "/api"
     }
     else if(window.location.origin == "https://venust-admin.quantumtri.com"){
       this.host = "https://venust-api.quantumtri.com"
+			this.url_api1 = "https://gatewaydemo.legoas.co.id/v1"
       this.url_api = this.host + "/api"
     }
-    else if(window.location.origin == "http://localhost:8082"){
+    else if(window.location.origin == "http://localhost:8080"){
 			// this.host = "https://api.student-open.com"
-      this.host = "https://venust-api.quantumtri.com"
-      this.url_api = this.host + "/api"
+      this.host = "http://20.198.220.250:8080"
+			this.url_api1 = "https://gatewaydemo.legoas.co.id/v1"
+      this.url_api = this.host + "/v1"
     }
+	}
+
+	async connect_mongodb(){
+		const app = new Realm.App({ id: this.mongodb_app_id })
+		if(app.currentUser == null){
+			if(this.mongodb_token != '')
+				await app.logIn(Realm.Credentials.apiKey(this.mongodb_token))
+			else
+				await app.logIn(Realm.Credentials.emailPassword(this.mongodb_user_email, this.mongodb_user_password))
+		}
+
+		const mongo = app.currentUser.mongoClient(this.mongodb_service_name)
+
+		return mongo
 	}
 
 	async request(url, method = 'get', data = {}, with_modal = true, onUploadProgress = () => { }) {
 		try {
-			// axios.defaults.headers.common['Accept'] = 'application/json'
+			axios.defaults.headers.common['Accept'] = null
 
 			var context = this
 			var header = {
 				"Content-Type": "application/json",
-				"Accept": "application/json",
-				"test": "",
 			}
+
 			var token = await window.localStorage.getItem('token')
+			var temp_token = await window.localStorage.getItem('temp_token')
 			if (token != null && token != '')
 				header['Authorization'] = token
+			else if (temp_token != null && temp_token != '')
+				header['Authorization'] = temp_token
+			else
+				header['Authorization'] = this.authorization
 
 
 			var response
@@ -105,6 +143,7 @@ export default class Base {
 							context.show_error(JSON.stringify(error.response.data))
 						}
 					})
+
 			}
 			else if (method === 'put') {
 				response = await axios.put(url, data, {
@@ -123,7 +162,7 @@ export default class Base {
 			}
 			else if (method === 'delete') {
 				response = await axios.delete(url, {
-					data: data,
+					// data: data,
 					headers: header,
 				})
 					.catch(function (error) {
@@ -146,9 +185,16 @@ export default class Base {
 			// 	console.log(response.headers); // "2.0.0"
 			// 	return response; // continue with response
 			// });
-			// console.log(response.headers)
+
+			var arr_header = {}
+			for(let header of Object.entries(response.headers)){
+				arr_header[header[0]] = header[1]
+
+			}
+			response.arrCustomResponseHeader = arr_header
+
 			if (response.status !== 401) {
-				return response.data
+				return response
 			}
 			else {
 				window.localStorage.clear()
@@ -164,7 +210,7 @@ export default class Base {
 	async save_current_page(title, is_reset = false){
 		var arr_pages = await window.localStorage.getItem('arr_pages')
 		arr_pages = arr_pages != null && !is_reset ? JSON.parse(arr_pages) : []
-		
+
 		var counter = 0
 		for(let page of arr_pages){
 			if(title == page.name)
@@ -256,7 +302,7 @@ export default class Base {
 		}
 		return true
 	}
-	
+
 	async getRouteNoAuth(){
 		var arr = ['/login', '/otp', '/choose-role']
 		var flag = false
@@ -272,9 +318,9 @@ export default class Base {
 	async redirect_to_login() {
 		var token = await window.localStorage.getItem('token')
 		var response = await this.check_token_expired()
-		
-		
-		if ((token === '' || token == null || !response) && !this.getRouteNoAuth()) {
+		var routeNoAuth = await this.getRouteNoAuth()
+
+		if ((token === '' || token == null || !response) && !routeNoAuth) {
 			window.localStorage.clear()
 			window.location.href = '/login'
 		}
@@ -324,7 +370,7 @@ export default class Base {
 			data = data.substring(0, max_length)
 		return data
 	}
-	
+
 	capitalizeFirstLetter(string) {
 		return string.charAt(0).toUpperCase() + string.slice(1);
 	}
@@ -382,14 +428,14 @@ export default class Base {
 		// 			is_inside_tag = true
 		// 		else if(chunk[x] == ">")
 		// 			is_inside_tag = false
-				
+
 		// 		if(!is_inside_tag && is_first_space)
 		// 			chunk_format += "&nbsp;"
 		// 	}
 		// 	chunk_format += chunk.substring(index)
     //   data.chunk_content = '(' + chunk_format + ')'
     //   data.index = counter
-      
+
     //   var response = await this.request(url, counter == 0 ? method : 'put', data);
 
     //   if (response != null) {

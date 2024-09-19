@@ -1,6 +1,7 @@
 <script>
 import { required, email } from "vuelidate/lib/validators";
 import moment from 'moment'
+import * as Realm from "realm-web"
 
 import {
   authMethods,
@@ -17,13 +18,19 @@ import {GreeterClient, GreeterPromiseClient } from "@/proto/helloworld_grpc_web_
 
 const base = new Base()
 
+const {
+	BSON: { ObjectId },
+} = Realm;
+
 export default {
   data() {
     return {
-      email: "",
+			base: null,
+      username: "",
       password: "",
       submitted: false,
       is_please_wait: false,
+			temp_token: '',
     };
   },
   computed: {
@@ -32,6 +39,7 @@ export default {
     }
   },
   async created() {
+		this.base = new Base()
     // var token = localStorage.getItem('token')
 
     // if (token != null) {
@@ -41,7 +49,13 @@ export default {
     // }
     // await localStorage.clear()
     document.body.classList.add("auth-body-bg");
-		this.test_grpc1()
+
+		var token = await window.localStorage.getItem('token')
+		var temp_token = await window.localStorage.getItem('temp_token')
+		if(token != null)
+			this.get_profile()
+		else if(token == null && temp_token == null)
+			this.get_token()
   },
   validations: {
     email: { required, email },
@@ -57,32 +71,32 @@ export default {
 			enableDevTools([
 				client,
 			]);
-		
-			
+
+
 			var request = new RequestAnonymous();
 			request.setPartnerCode('lgs');
-			
+
 			client.anonymousToken(request, {
 				authorization: 'Basic YXV0aGVudGljYXRpb246c3VwZXJzZWNyZXQ=',
 				'content-type': 'application/grpc-web-text',
 			}, (err, response) => {
 				console.log(JSON.stringify(err))
 			})
-			
+
 		},
 		async test_grpc1(){
 			var client = new GreeterClient('http://172.104.189.236:50052', null, {
-				
+
 			});
 			const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
 			enableDevTools([
 				client,
 			]);
-		
-			
+
+
 			var request = new HelloRequest();
 			request.setName('World bmqbebqwe qeqweq');
-			
+
 			client.sayHello(request, {
 				Authorization: 'Basic YXV0aGVudGljYXRpb246c3VwZXJzZWNyZXQ=',
 				'one-time-password': 42,
@@ -91,76 +105,66 @@ export default {
 			}, (err, response) => {
 				console.log(response)
 			})
-			
+
+		},
+		async get_token(){
+			var response = await base.request(base.url_api + '/authentication/anonymous/lgs', 'post', {
+				// req: {
+				// 	partner_code: "lgs",
+				// },
+			})
+
+      if (response != null) {
+        if (response.data.code == 200) {
+					window.localStorage.setItem('temp_token', 'Bearer ' + response.arrCustomResponseHeader['grpc-metadata-token'])
+        }
+        else
+          base.show_error(response.data.message)
+      }
+      else
+        base.show_error("Server Error")
+
+		},
+		async get_profile(){
+			var response = await base.request(base.url_api + '/admin/profile')
+
+			if (response != null) {
+				console.log(JSON.stringify(response.data))
+			}
+			else
+				base.show_error("Server Error")
+
 		},
     // Try to log the user in with the username
     // and password they provided.
     async tryToLogIn() {
-      this.submitted = true;
-      // stop here if form is invalid
-      this.$v.$touch();
+			if(this.username == '')
+				base.show_error('Username is Empty')
+			else if(this.password == '')
+				base.show_error('Password is Empty')
+			else{
+				this.is_please_wait = true
+				var response = await base.request(base.url_api + '/authentication/login/admin', 'post', {
+					username: this.username,
+					password: this.password,
+				})
+				this.is_please_wait = false
 
-      if (this.$v.$invalid) {
-        return;
-      }
-      else {
-        if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
-          this.tryingToLogIn = true;
-          // Reset the authError if it existed.
-          this.authError = null;
-          return (
-            this.logIn({
-              email: this.email,
-              password: this.password
-            })
-              // eslint-disable-next-line no-unused-vars
-              .then(token => {
-                this.tryingToLogIn = false;
-                this.isAuthError = false;
-                // Redirect to the originally requested page, or to the home page
-                this.$router.push(
-                  this.$route.query.redirectFrom || { name: "home" }
-                );
-              })
-              .catch(error => {
-                this.tryingToLogIn = false;
-                this.authError = error ? error : "";
-                this.isAuthError = true;
-              })
-          );
-        } else {
-					window.localStorage.setItem('token', 'test')
-					window.localStorage.setItem('token_expired', moment().add(1, 'd').format('YYYY-MM-DD HH:mm:ss'))
-					this.$router.push(this.$route.query.redirectFrom || { name: "otp" })
-//           this.is_please_wait = true
-//           var url = base.url_api + '/auth/login'
-//           const { email, password } = this;
-//           var data = {
-//             type: 'web_admin',
-//             email: email,
-//             password: password
-//           }
-// 
-//           var response = await base.request(url, 'post', data)
-//           this.is_please_wait = false
-// 
-//           if (response != null) {
-//             if (response.status == 'success') {
-//               await localStorage.setItem('token', response.token)
-//               window.localStorage.setItem('token_expired', moment().add(1, 'd').format('YYYY-MM-DD HH:mm:ss'))
-//               await localStorage.setItem('user', JSON.stringify(response.user))
-//               // window.location.href = '/'
-//               this.$router.push(
-//                 this.$route.query.redirectFrom || { name: "otp" }
-//               );
-//             }
-//             else
-//               base.show_error(response.message)
-//           }
-//           else
-//             base.show_error("Server Error")
-        }
-      }
+				if (response != null) {
+					if (response.data.code == 200) {
+						window.localStorage.removeItem('temp_token')
+
+						window.localStorage.setItem('token', 'Bearer ' + response.arrCustomResponseHeader['grpc-metadata-token'])
+						window.localStorage.setItem('token_expired', moment().add(6, 'h').format('YYYY-MM-DD HH:mm:ss'))
+
+						window.location.href = "/choose-role"
+					}
+					else
+						base.show_error(response.data.message)
+				}
+				else
+					base.show_error("Server Error")
+			}
     }
   }
 };
@@ -201,13 +205,8 @@ export default {
                         <form class="form-horizontal" @submit.prevent="tryToLogIn">
                           <div class="form-group auth-form-group-custom mb-4">
                             <i class="ri-mail-line auti-custom-input-icon"></i>
-                            <label for="email">Email</label>
-                            <input type="email" v-model="email" class="form-control" id="email" placeholder="Enter email"
-                              :class="{ 'is-invalid': submitted && $v.email.$error }" />
-                            <div v-if="submitted && $v.email.$error" class="invalid-feedback">
-                              <span v-if="!$v.email.required">Email is required.</span>
-                              <span v-if="!$v.email.email">Please enter valid email.</span>
-                            </div>
+                            <label for="email">Username</label>
+                            <input type="text" v-model="username" class="form-control" id="username" placeholder="Enter username"/>
                           </div>
 
                           <div class="form-group auth-form-group-custom mb-2">
@@ -240,7 +239,7 @@ export default {
               </div>
             </div>
           </div>
-          
+
         </div>
       </div>
     </div>

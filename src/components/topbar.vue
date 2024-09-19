@@ -122,7 +122,7 @@ export default {
               <img src="@/assets/logo_new.png" alt height="45" />
             </span>
           </a> -->
-          <a href="#!" class="logo">
+          <a href="/" class="logo">
             <h3 class="m-0 text-primary text-center">Backoffice Legoas</h3>
           </a>
         </div>

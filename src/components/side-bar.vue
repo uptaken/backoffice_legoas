@@ -1,6 +1,7 @@
 <script>
 import simplebar from "simplebar-vue";
 import { layoutComputed } from "@/state/helpers";
+import Base from "@/Utils/base";
 
 // import MetisMenu from "metismenujs/dist/metismenujs";
 
@@ -29,13 +30,39 @@ export default {
   },
   data() {
     return {
-      menuItems: menuItems,
+      menuItems: [
+				{
+					id: 1,
+					menuName: 'Dictionary',
+					menuIcon: 'ri-dashboard-line',
+					menuUrl: '/dictionary',
+					childMenu: [],
+				},
+				{
+					id: 1,
+					menuName: 'Province',
+					menuIcon: 'ri-dashboard-line',
+					menuUrl: '/province',
+					childMenu: [],
+				},
+				{
+					id: 1,
+					menuName: 'Regency',
+					menuIcon: 'ri-dashboard-line',
+					menuUrl: '/regency',
+					childMenu: [],
+				},
+			],
+			base: null,
     };
   },
   computed: {
     ...layoutComputed,
   },
   mounted: function () {
+		this.base = new Base()
+
+		// this.get_menu()
     // eslint-disable-next-line no-unused-vars
     // var menuRef = new MetisMenu("#side-menu");
     var links = document.getElementsByClassName("side-nav-link-ref");
@@ -87,22 +114,35 @@ export default {
     }
   },
   methods: {
+		async get_menu(){
+			var response = await this.base.request(this.base.url_api + '/admin/main/menu', 'post', {})
+
+			if (response != null) {
+				this.menuItems = response.data.mainMenu
+			}
+			else
+				this.base.show_error("Server Error")
+
+		},
     /**
      * Returns true or false if given menu item has child or not
      * @param item menuItem
      */
     hasItems(item) {
-      return item.subItems !== undefined ? item.subItems.length > 0 : false;
+      return item.childMenu != null ? item.childMenu.length > 0 : false;
     },
     onRoutechange() {
-      setTimeout(() => {
-        const currentPosition = document.getElementsByClassName("mm-active")[0]
-          .offsetTop;
-        if (currentPosition > 400)
-          this.$refs.currentMenu.SimpleBar.getScrollElement().scrollTop =
-            currentPosition + 200;
-      }, 300);
+      // setTimeout(() => {
+      //   const currentPosition = document.getElementsByClassName("mm-active")[0]
+      //     .offsetTop;
+      //   if (currentPosition > 400)
+      //     this.$refs.currentMenu.SimpleBar.getScrollElement().scrollTop =
+      //       currentPosition + 200;
+      // }, 300);
     },
+		onMenuClicked(item){
+			window.localStorage.setItem('menu', JSON.stringify(item))
+		},
   },
   watch: {
     $route: {
@@ -192,31 +232,28 @@ export default {
                 'has-arrow': !item.badge,
                 'has-dropdown': item.badge,
               }">
-                <i :class="`bx ${item.icon}`" v-if="item.icon"></i>
-                <span>{{ $t(item.label) }}</span>
-                <span :class="`badge badge-pill badge-${item.badge.variant} float-right`" v-if="item.badge">{{
-                  $t(item.badge.text) }}</span>
+                <i :class="`fa ${item.menuIcon}`" v-if="item.menuIcon"></i>
+                <span>{{ item.menuName }}</span>
+                <span :class="`badge badge-pill badge-${item.badge.variant} float-right`" v-if="item.badge">{{ $t(item.badge.text) }}</span>
               </a>
 
-              <router-link :to="item.link" v-if="!hasItems(item)" class="side-nav-link-ref">
-                <i :class="`bx ${item.icon}`" v-if="item.icon"></i>
-                <span>{{ $t(item.label) }}</span>
-                <span :class="`badge badge-pill badge-${item.badge.variant} float-right`" v-if="item.badge">{{
-                  $t(item.badge.text) }}</span>
-              </router-link>
+              <a :href="item.menuUrl != '#' ? item.menuUrl : '/custom?menu_id=' + item.id" v-if="!hasItems(item)" @click="onMenuClicked(item)" class="side-nav-link-ref">
+                <i :class="`fa-solid ${item.menuIcon}`" v-if="item.menuIcon"></i>
+                <span>{{ $t(item.menuName) }}</span>
+                <span :class="`badge badge-pill badge-${item.badge.variant} float-right`" v-if="item.badge">{{ $t(item.badge.text) }}</span>
+              </a>
 
               <ul v-if="hasItems(item)" class="sub-menu" aria-expanded="false">
-                <li v-for="(subitem, index) of item.subItems" :key="index">
-                  <router-link :to="subitem.link" v-if="!hasItems(subitem)" class="side-nav-link-ref">{{ $t(subitem.label)
-                  }}</router-link>
-                  <a v-if="hasItems(subitem)" class="side-nav-link-a-ref has-arrow" href="javascript:void(0);">{{
-                    subitem.label }}</a>
-                  <ul v-if="hasItems(subitem)" class="sub-menu mm-collapse" aria-expanded="false">
+                <li v-for="(child, index) of item.childMenu" :key="index">
+                  <router-link :to="child.menuUrl != '#' ? child.menuUrl : '/custom?menu_id=' + child.id" v-if="!hasItems(child)" class="side-nav-link-ref">{{ child.menuName }}</router-link>
+                  <a v-if="hasItems(child)" class="side-nav-link-a-ref has-arrow" href="javascript:void(0);">{{
+                    child.menuName }}</a>
+                  <!-- <ul v-if="hasItems(subitem)" class="sub-menu mm-collapse" aria-expanded="false">
                     <li v-for="(subSubitem, index) of subitem.subItems" :key="index">
                       <router-link :to="subSubitem.link" class="side-nav-link-ref">{{ $t(subSubitem.label)
                       }}</router-link>
                     </li>
-                  </ul>
+                  </ul> -->
                 </li>
               </ul>
             </li>

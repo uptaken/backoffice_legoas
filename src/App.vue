@@ -11,6 +11,7 @@ import momentTZ from 'moment-timezone'
 import moment from 'moment'
 
 import appConfig from "@/app.config";
+import Base from "@/Utils/base";
 import CustomPleaseWait from "@/views/layouts/CustomPleaseWait";
 
 export default {
@@ -18,6 +19,11 @@ export default {
   components: {
     'CustomPleaseWait': CustomPleaseWait,
   },
+	data(){
+		return {
+			base: null,
+		}
+	},
   page: {
     // All subcomponent titles will be injected into this template.
     titleTemplate(title) {
@@ -26,27 +32,40 @@ export default {
     }
   },
   async created(){
-    var token_expired = await window.localStorage.getItem('token_expired')
-    if(token_expired != null)
-      token_expired = moment(token_expired, 'YYYY-MM-DD HH:mm:ss')
 
-    if(token_expired != null && token_expired.isBefore(moment())){
-      this.base.show_error("Token Expired! Please login again")
-      window.localStorage.removeItem('token')
-      window.localStorage.removeItem('token_expired')
-
-      window.location.href = "/auth/login"
-      return
-    }
     // }
   },
-  mounted(){
+  async mounted(){
+		this.base = new Base()
+
+		var token_expired = await window.localStorage.getItem('token_expired')
+		if(token_expired != null)
+			token_expired = moment(token_expired, 'YYYY-MM-DD HH:mm:ss')
+
+
+		if(token_expired != null && token_expired.isBefore(moment())){
+			this.base.show_error("Token Expired! Please login again")
+			window.localStorage.removeItem('token')
+			window.localStorage.removeItem('token_expired')
+
+			window.location.href = "/login"
+			return
+		}
+
+		const last_version = localStorage.getItem('version')
+		if (last_version == null || (last_version != null && last_version !== this.base.app_version)) {
+			localStorage.setItem('version', this.base.app_version)
+			window.location.reload(true);
+		}
+
     var arr = [
       'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js',
       'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js',
     ]
 
     this.addScript(arr)
+
+
     // setTimeout(() => {
     //   window.$('#please_wait_modal').modal('show')
     // }, 1000)
