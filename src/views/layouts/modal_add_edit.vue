@@ -38,7 +38,7 @@ export default {
 							break
 						}
 					}
-					
+
 					if(field_data.type == 'currency')
 						arr[x] = this.base.to_currency_format(arr[x])
 					else if(field_data.type == 'phone')
@@ -50,6 +50,7 @@ export default {
 		},
 		data(val){
 			var arr_form = this.arr_form
+			console.log(arr_form)
 			for(let x in arr_form){
 				if(val._id != null){
 					for(let y in val){
@@ -67,7 +68,7 @@ export default {
   },
   mounted(){
     this.base = new Base()
-		
+
 		var arr = {}
 		for(let data of this.fields){
 			arr[data.id] = ''
@@ -86,20 +87,20 @@ export default {
 							break
 						}
 					}
-					
+
 					if((field_data.allow_add_edit == null || field_data.allow_add_edit) && field_data.required){
 						message = field_data.text + ' is Empty'
 						break
 					}
 				}
 			}
-			
+
 			if(message != '')
 				this.base.show_error(message)
 			else{
 				$('#modalAddEdit').modal('hide')
-				
-				this.$emit('onSubmit', this.arr_form)
+
+				this.$emit('onSubmit', JSON.parse(JSON.stringify(this.arr_form)))
 			}
     },
 		onFormChanged(arr_form){
@@ -120,7 +121,7 @@ export default {
           </button>
         </div>
         <div class="modal-body">
-					
+
           <div  v-for="(field, index) in fields" :key="index">
 						<div class="form-group" v-if="field.allow_add_edit == null || field.allow_add_edit">
 							<label>{{ field.text }}</label>
@@ -130,7 +131,7 @@ export default {
 								@onFormChanged="onFormChanged"/>
 						</div>
 					</div>
-					
+
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

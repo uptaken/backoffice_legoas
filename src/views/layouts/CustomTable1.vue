@@ -200,48 +200,60 @@ export default {
 			if(val != null){
 				var context = this
 				var index = -1
+				var flag = true
 
-				for await (const change of val.watch()) {
-					switch (change.operationType) {
-						case "insert": {
-							const { documentKey, fullDocument } = change;
-							context.arr.splice(0, 0, fullDocument)
-							console.log(`new document: ${documentKey}`, fullDocument);
-							break;
-						}
-						case "update": {
-							const { documentKey, fullDocument } = change;
-							var arr = context.arr
-							index = -1
-							for(let x in context.arr){
-								if(context.arr[x]._id == documentKey){
-									index = x
-									// context.arr[x] = fullDocument
-									break
-								}
-							}
-							context.$set(context.arr, index, fullDocument)
-							// context.arr = arr
+				try{
+					for await (const change of val.watch()) {
+						var { documentKey, fullDocument } = change;
+						switch (change.operationType) {
+							case "insert": {
+								for(let field of this.fields)
+									fullDocument = await this.manage_arr_data(fullDocument, field)
+								console.log(fullDocument)
+								context.arr.splice(0, 0, fullDocument)
 
-							console.log(`updated document: ${documentKey}`, fullDocument);
-							break;
-						}
-						case "delete": {
-							const { documentKey } = change;
-							index = -1
-							for(let x in context.arr){
-								if(context.arr[x]._id == documentKey){
-									index = x
-									break
-								}
+								// console.log(`new document: ${documentKey}`, fullDocument);
+								break;
 							}
-							context.arr.splice(index, 1)
-							context.get_data()
-							console.log(`deleted document: ${documentKey}`);
-							break;
+							case "update": {
+								var arr = context.arr
+								index = -1
+								for(let x in context.arr){
+									if(context.arr[x]._id == documentKey._id){
+										index = x
+										break
+									}
+								}
+								for(let field of this.fields)
+									fullDocument = await this.manage_arr_data(fullDocument, field)
+								context.$set(context.arr, index, fullDocument)
+								// console.log(`updated document: ${documentKey}`, fullDocument);
+								break;
+							}
+							case "delete": {
+								const { documentKey } = change;
+								index = -1
+								for(let x in context.arr){
+									if(context.arr[x]._id == documentKey._id){
+										index = x
+										break
+									}
+								}
+								context.arr.splice(index, 1)
+								context.get_data()
+								// console.log(`deleted document: ${documentKey}`);
+								break;
+							}
+						}
+						if (this.collectionObj == null){
+							flag = false
+							break
 						}
 					}
-					if (this.collectionObj == null) break; // Exit async iterator
+				} catch(e){
+					console.log(e)
+					// this.collectionObj == null
+					this.connect_mongodb()
 				}
 			}
 		},
@@ -303,13 +315,13 @@ export default {
 		},
 		async onRemoveSubmit(){
 			if(this.arr_index_delete.length >= 0 && this.action == 'delete'){
-				$('#please_wait_modal').modal('show')
+				// $('#please_wait_modal').modal('show')
 				for(let index of this.arr_index_delete){
 					this.$emit('onRemove', this.arr[index]._id)
 				}
-				setTimeout(() => {
-					$('#please_wait_modal').modal('hide')
-				}, 500)
+				// setTimeout(() => {
+				// 	$('#please_wait_modal').modal('hide')
+				// }, 500)
 
 				this.action = ''
 				this.arr_index_delete = []
@@ -342,6 +354,24 @@ export default {
 			this.arr = arr
 			this.action = ''
 			this.index_edit = -1
+		},
+		async manage_arr_data(data, field, foreignCollectionObj = null){
+			if(field.type == 'json')
+				data[field.id] = JSON.stringify(data[field.id])
+			else if(field.type == 'foreign_key'){
+				if(foreignCollectionObj == null){
+					var mongo = await this.base.connect_mongodb()
+					foreignCollectionObj = mongo.db(field.db).collection(field.collection)
+				}
+
+				var arr_foreign = await foreignCollectionObj.aggregate([
+					{ $match: { _id: data[field.id], }, },
+				])
+				data[field.id] = arr_foreign[0][field.foreign_column_name]
+			}
+			data.is_checked = false
+
+			return data
 		},
 		async get_data(){
 			var query = {}
@@ -379,6 +409,7 @@ export default {
 				}
 			}
 
+			$('#please_wait_modal').modal('show')
 			// prepare for query, sort, and pagination for realm sdk
 			var pipeline = [
 				{ $match: query, },
@@ -398,22 +429,21 @@ export default {
 
 
 			// manage data generated
-			for(let data of arr){
-				for(let field of this.fields){
-					if(field.type == 'json')
-						data[field.id] = JSON.stringify(data[field.id])
-					else if(field.type == 'foreign_key'){
-						var mongo = await this.base.connect_mongodb()
-						var foreignCollectionObj = mongo.db(field.db).collection(field.collection)
-
-						var arr_foreign = await foreignCollectionObj.aggregate([
-							{ $match: { _id: data[field.id], }, },
-						])
-						data[field.id] = arr_foreign[0][field.foreign_column_name]
-					}
+			for(let field of this.fields){
+				if(field.type == 'foreign_key'){
+					var mongo = await this.base.connect_mongodb()
+					var foreignCollectionObj = mongo.db(field.db).collection(field.collection)
 				}
-				data.is_checked = false
+
+				if(field.type == 'json' || field.type == 'foreign_key'){
+					for(let data of arr)
+						data = this.manage_arr_data(data, field, foreignCollectionObj)
+				}
 			}
+			setTimeout(() => {
+				$('#please_wait_modal').modal('hide')
+			}, 500)
+
 			this.arr = arr
 		},
   },

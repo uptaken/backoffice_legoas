@@ -27,7 +27,7 @@ export default {
           { id: "_id", text: 'ID', allow_add_edit: false, },
           { id: "province", text: 'Name', },
         ],
-				remove_column_text: ['key', 'value'],
+				remove_column_text: ['_id', 'province'],
       };
     },
     async created() {
@@ -41,17 +41,18 @@ export default {
     },
     methods: {
 			async onAdd(form){
-				form.province_name = form.province
+				form.name = form.province
+				// form.id = moment().format('DDMMYYHHmmssSSS')
 				delete form.province
-				$('#please_wait_modal').modal('show')
+				// $('#please_wait_modal').modal('show')
 
 				var temp = {}
-				temp['province'] = []
-				temp['province'].push(form)
+				temp['provinces'] = []
+				temp['provinces'].push(form)
 				var response = await this.base.request(this.base.url_api1 + '/province', 'post', temp)
-				setTimeout(() => {
-					$('#please_wait_modal').modal('hide')
-				}, 500)
+				// setTimeout(() => {
+				// 	$('#please_wait_modal').modal('hide')
+				// }, 500)
 
 				if (response != null) {
 					if (response.data.code != 200)
@@ -62,16 +63,14 @@ export default {
 			},
 			async onEdit(form){
 				form.province_name = form.province
-				delete form.province
-				$('#please_wait_modal').modal('show')
+				// delete form.province
+				// $('#please_wait_modal').modal('show')
 
-				var temp = {}
-				temp['province'] = []
-				temp['province'].push(form)
-				var response = await this.base.request(this.base.url_api1 + '/province', 'put', temp)
-				setTimeout(() => {
-					$('#please_wait_modal').modal('hide')
-				}, 500)
+				var temp = form
+				var response = await this.base.request(this.base.url_api1 + '/province/update/' + form._id, 'put', temp)
+				// setTimeout(() => {
+				// 	$('#please_wait_modal').modal('hide')
+				// }, 500)
 
 				if (response != null) {
 					if (response.data.code != 200)

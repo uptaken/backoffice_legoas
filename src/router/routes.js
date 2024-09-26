@@ -94,7 +94,7 @@ export default [
         path: '/change-password',
         name: 'Change Password',
         meta: { authRequired: true },
-        component: () => import('../views/pages/master/change-password')
+        component: () => import('../views/pages/account/change-password')
     },
 
     {

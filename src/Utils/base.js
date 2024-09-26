@@ -79,7 +79,7 @@ export default class Base {
 	}
 
 	async connect_mongodb(){
-		const app = new Realm.App({ id: this.mongodb_app_id })
+		const app = new Realm.App({ id: this.mongodb_app_id, timeout: 3600000, })
 		if(app.currentUser == null){
 			if(this.mongodb_token != '')
 				await app.logIn(Realm.Credentials.apiKey(this.mongodb_token))

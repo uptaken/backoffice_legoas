@@ -28,7 +28,7 @@ export default {
           { id: "province_id", text: 'Province ID', type: 'foreign_key', db: 'master', collection: 'provinces', foreign_column_name: 'province', },
 					{ id: "regencies", text: 'Name', },
         ],
-				remove_column_text: ['key', 'value'],
+				remove_column_text: ['_id', 'regencies'],
       };
     },
     async created() {
@@ -43,7 +43,9 @@ export default {
     methods: {
 			async onAdd(form){
 				form.regencies_name = form.regencies
-				form.id = form.province_id
+				// form.id = form.province_id
+				// form.id = moment().format('DDMMYYHHmmssSSS')
+				// delete form.province_id
 				// $('#please_wait_modal').modal('show')
 
 				var temp = {}

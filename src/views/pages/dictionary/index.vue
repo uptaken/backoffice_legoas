@@ -55,14 +55,14 @@ export default {
     },
     methods: {
 			async onAdd(form){
-				$('#please_wait_modal').modal('show')
+				// $('#please_wait_modal').modal('show')
 				var temp = {}
 				temp['dictionaries'] = []
 				temp['dictionaries'].push(form)
 				var response = await this.base.request(this.base.url_api1 + '/dictionary', 'post', temp)
-				setTimeout(() => {
-					$('#please_wait_modal').modal('hide')
-				}, 500)
+				// setTimeout(() => {
+				// 	$('#please_wait_modal').modal('hide')
+				// }, 500)
 
 				if (response != null) {
 					if (response.data.code != 200)
@@ -72,14 +72,14 @@ export default {
 					this.base.show_error("Server Error")
 			},
 			async onEdit(form){
-				$('#please_wait_modal').modal('show')
+				// $('#please_wait_modal').modal('show')
 				var temp = {}
 				temp['dictionaries'] = []
 				temp['dictionaries'].push(form)
 				var response = await this.base.request(this.base.url_api1 + '/dictionary', 'put', temp)
-				setTimeout(() => {
-					$('#please_wait_modal').modal('hide')
-				}, 500)
+				// setTimeout(() => {
+				// 	$('#please_wait_modal').modal('hide')
+				// }, 500)
 
 				if (response != null) {
 					if (response.data.code != 200)
