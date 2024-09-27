@@ -50,7 +50,6 @@ export default {
 		},
 		data(val){
 			var arr_form = this.arr_form
-			console.log(arr_form)
 			for(let x in arr_form){
 				if(val._id != null){
 					for(let y in val){

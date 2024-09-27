@@ -41,15 +41,15 @@ export default {
     },
     methods: {
 			async onAdd(form){
-				form.name = form.province
+				form.province_name = form.province
 				// form.id = moment().format('DDMMYYHHmmssSSS')
 				delete form.province
 				// $('#please_wait_modal').modal('show')
 
 				var temp = {}
-				temp['provinces'] = []
-				temp['provinces'].push(form)
-				var response = await this.base.request(this.base.url_api1 + '/province', 'post', temp)
+				temp['locations'] = []
+				temp['locations'].push(form)
+				var response = await this.base.request(this.base.url_api1 + '/location', 'post', temp)
 				// setTimeout(() => {
 				// 	$('#please_wait_modal').modal('hide')
 				// }, 500)
@@ -63,11 +63,14 @@ export default {
 			},
 			async onEdit(form){
 				form.province_name = form.province
+				form.id = form._id
 				// delete form.province
 				// $('#please_wait_modal').modal('show')
 
-				var temp = form
-				var response = await this.base.request(this.base.url_api1 + '/province/update/' + form._id, 'put', temp)
+				var temp = {}
+				temp['locations'] = []
+				temp['locations'].push(form)
+				var response = await this.base.request(this.base.url_api1 + '/location', 'put', temp)
 				// setTimeout(() => {
 				// 	$('#please_wait_modal').modal('hide')
 				// }, 500)
@@ -80,10 +83,14 @@ export default {
 					this.base.show_error("Server Error")
 			},
 			async onRemove(id){
-				var response = await this.base.request(this.base.url_api1 + '/province/' + id, 'delete')
+				var temp = {}
+				temp['id'] = []
+				temp['id'].push(id)
+
+				var response = await this.base.request(this.base.url_api1 + '/location/delete', 'post', temp)
 
 				if (response != null) {
-					if (response.data.code != 0)
+					if (response.data.code != 200)
 						this.base.show_error(response.data.message)
 				}
 				else

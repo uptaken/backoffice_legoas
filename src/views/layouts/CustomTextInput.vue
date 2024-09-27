@@ -30,6 +30,16 @@ export default {
 	watch: {
 		arr_form1: {
 			handler(newValue, oldValue) {
+				if(this.field.type == 'foreign_key'){
+					for(let foreign of this.arr_foreign){
+						if(foreign._id == newValue[this.field.id]){
+							newValue[this.field.foreign_column_name + '_foreign'] = foreign
+							break
+						}
+					}
+
+				}
+
 				this.$emit('onFormChanged', newValue)
 			},
 			deep: true,
