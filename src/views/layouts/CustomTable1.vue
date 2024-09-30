@@ -129,20 +129,30 @@ export default {
 				// check data selected
 				for(let x in this.arr){
 					if(this.arr[x].is_checked){
-						this.data_edit = this.arr[x]
+						var data = JSON.parse(JSON.stringify(this.arr[x]))
+						for(let field of this.fields){
+							if(field.type == 'foreign_key')
+								data[field.id] = data[field.id + '_data']._id
+						}
+						this.data_edit = data
 						this.index_edit = x
 						break
 					}
 					counter++
 				}
 
+
 				if(counter == this.arr.length){
 					this.base.show_error('Please select a data')
 					this.action = ''
 				}
 				else{
-					if(val == 'edit')
-						$('#modalAddEdit').modal('show')
+					if(val == 'edit'){
+						// setTimeout(() => {
+							$('#modalAddEdit').modal('show')
+						// }, 500)
+
+					}
 					else if(val == 'delete'){
 						var arr_index_delete = []
 						var string = 'Konfirmasi data berikut ini:\n'
@@ -328,7 +338,7 @@ export default {
 			}
 		},
 		async onAddEditSubmit(arr_form){
-			var arr = this.arr
+			var arr = JSON.parse(JSON.stringify(this.arr))
 			if(this.index_edit >= 0)
 				arr[this.index_edit].is_checked = false
 
@@ -356,7 +366,7 @@ export default {
 			this.index_edit = -1
 		},
 		async manage_arr_data(data, field, foreignCollectionObj = null){
-			if(field.type == 'json')
+			if(field.type == 'json' || field.type == 'json_breakdown')
 				data[field.id] = JSON.stringify(data[field.id])
 			else if(field.type == 'foreign_key'){
 				if(foreignCollectionObj == null){
@@ -367,7 +377,8 @@ export default {
 				var arr_foreign = await foreignCollectionObj.aggregate([
 					{ $match: { _id: data[field.id], }, },
 				])
-				data[field.id] = arr_foreign[0][field.foreign_column_name]
+				data[field.id + '_data'] = arr_foreign.length > 0 ? arr_foreign[0] : {}
+				data[field.id] = arr_foreign.length > 0 ? arr_foreign[0][field.foreign_column_name] : '-'
 			}
 			data.is_checked = false
 
@@ -435,7 +446,7 @@ export default {
 					var foreignCollectionObj = mongo.db(field.db).collection(field.collection)
 				}
 
-				if(field.type == 'json' || field.type == 'foreign_key'){
+				if(field.type == 'json' || field.type == 'json_breakdown' || field.type == 'foreign_key'){
 					for(let data of arr)
 						data = this.manage_arr_data(data, field, foreignCollectionObj)
 				}

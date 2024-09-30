@@ -112,6 +112,27 @@ export default [
 		},
 
 		{
+				path: '/location',
+				name: 'Province & City',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/location')
+		},
+
+		{
+				path: '/role',
+				name: 'Role',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/roles')
+		},
+
+		{
+				path: '/role/user',
+				name: 'User Role',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/user_roles')
+		},
+
+		{
 				path: '/province',
 				name: 'Province',
 				meta: { authRequired: true },
@@ -123,5 +144,40 @@ export default [
 				name: 'Regency',
 				meta: { authRequired: true },
 				component: () => import('../views/pages/regency')
+		},
+
+		{
+				path: '/partner',
+				name: 'Partner',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/partner')
+		},
+
+		{
+				path: '/customer',
+				name: 'Customer',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/customer')
+		},
+
+		{
+				path: '/office',
+				name: 'Office',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/office')
+		},
+
+		{
+				path: '/customer',
+				name: 'Customer',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/customer')
+		},
+
+		{
+				path: '/menu',
+				name: 'Menu',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/menu')
 		},
 ]

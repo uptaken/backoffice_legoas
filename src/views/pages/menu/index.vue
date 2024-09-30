@@ -11,11 +11,11 @@ const base = new Base()
 // import { tableData } from "../../../tables/dataAdvancedtable";
 
 /**
- * Regency component
+ * Menu component
  */
 export default {
     page: {
-      title: "Regency",
+      title: "Menu",
       meta: [{ name: "description", content: appConfig.description }]
     },
     components: { Layout, PageHeader, CustomTable, },
@@ -25,10 +25,11 @@ export default {
         title: "",
         fields: [
           { id: "_id", text: 'ID', allow_add_edit: false, },
-          { id: "province", text: 'Province', },
-					{ id: "city", text: 'Name', },
+					{ id: 'menu_icon', text: 'Icon', },
+					{ id: 'menu_name', text: 'Name', },
+					{ id: 'menu_url', text: 'URL', },
         ],
-				remove_column_text: ['_id', 'regencies'],
+				remove_column_text: ['_id', 'menu_name'],
       };
     },
     async created() {
@@ -38,21 +39,20 @@ export default {
 			// 	menu = JSON.parse(menu)
 			//
 			// this.title = menu.menuName
-      base.save_current_page('Regency', true)
+      base.save_current_page('Menu', true)
     },
     methods: {
 			async onAdd(form){
-				form.city_name = form.regencies
-				form.province_name = form.province_foreign.province
-				// form.id = form.province_id
+				// form.province_name = form.province
+				// form.city_name = form.city
 				// form.id = moment().format('DDMMYYHHmmssSSS')
-				// delete form.province_id
+				// delete form.province
 				// $('#please_wait_modal').modal('show')
 
 				var temp = {}
-				temp['locations'] = []
-				temp['locations'].push(form)
-				var response = await this.base.request(this.base.url_api1 + '/location', 'post', temp)
+				temp['user_roles'] = []
+				temp['user_roles'].push(form)
+				var response = await this.base.request(this.base.url_api1 + '/admin/user/role', 'post', temp)
 				// setTimeout(() => {
 				// 	$('#please_wait_modal').modal('hide')
 				// }, 500)
@@ -65,15 +65,14 @@ export default {
 					this.base.show_error("Server Error")
 			},
 			async onEdit(form){
-				form.city_name = form.regencies
-				form.province_name = form.province_foreign.province
-				form.id = form.province_id
+				// form.province_name = form.province
+				// form.city_name = form.city
+				// form.id = form._id
+				// delete form.province
 				// $('#please_wait_modal').modal('show')
 
-				var temp = {}
-				temp['locations'] = []
-				temp['locations'].push(form)
-				var response = await this.base.request(this.base.url_api1 + '/location', 'put', temp)
+				var temp = form
+				var response = await this.base.request(this.base.url_api1 + '/admin/user/role/' + form._id, 'put', temp)
 				// setTimeout(() => {
 				// 	$('#please_wait_modal').modal('hide')
 				// }, 500)
@@ -90,7 +89,7 @@ export default {
 				temp['id'] = []
 				temp['id'].push(id)
 
-				var response = await this.base.request(this.base.url_api1 + '/location/delete', 'post', temp)
+				var response = await this.base.request(this.base.url_api1 + '/admin/user/role/delete', 'post', temp)
 
 				if (response != null) {
 					if (response.data.code != 200)
@@ -114,8 +113,8 @@ export default {
                         <CustomTable
                           :fields="fields"
 													:remove_column_text="remove_column_text"
-													db="master"
-													collection="locations"
+													db="access"
+													collection="menus"
 													@onAdd="onAdd"
 													@onEdit="onEdit"
 													@onRemove="onRemove"/>

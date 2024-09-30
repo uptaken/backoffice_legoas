@@ -112,7 +112,7 @@ export default {
                           :fields="fields"
 													:remove_column_text="remove_column_text"
 													db="master"
-													collection="provinces"
+													collection="locations"
 													@onAdd="onAdd"
 													@onEdit="onEdit"
 													@onRemove="onRemove"/>

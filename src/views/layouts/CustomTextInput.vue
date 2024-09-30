@@ -17,7 +17,8 @@ const base = new Base()
  * Event component
  */
 export default {
-  props: ['arr_form', 'field', ],
+	name: 'CustomTextInput',
+  props: ['arr_form', 'field', 'type', ],
   components: {DatePicker, },
   data() {
     return {
@@ -46,11 +47,17 @@ export default {
 		},
 		arr_form: {
 			handler(newValue, oldValue) {
-				this.arr_form1 = newValue
+				// if(this.type == 'second'){
+				// 	console.log(newValue)
+				// }
+
+				if(newValue != null)
+					this.arr_form1 = newValue
 			},
 			deep: true,
 		},
 		field(val){
+
 			if(val.type == 'foreign_key'){
 				this.connect_foreign_mongodb()
 			}
@@ -67,6 +74,13 @@ export default {
 		if(this.field.type == 'foreign_key'){
 			this.connect_foreign_mongodb()
 		}
+
+
+
+		// if(this.type == 'second'){
+		// 	console.log(this.arr_form[this.field.id])
+		// 	this.arr_form1 = JSON.parse(JSON.stringify(this.arr_form))
+		// }
   },
   methods: {
 		async connect_foreign_mongodb(){
@@ -84,6 +98,7 @@ export default {
 
 			for(let data of arr){
 				data.is_checked = false
+
 			}
 			this.arr_foreign = arr
 		},
@@ -94,6 +109,7 @@ export default {
 <template>
 	<div>
 		<date-picker v-model="arr_form1[field.id]" type="date" input-class="form-control" format="DD/MM/YYYY" value-type="format" v-if="field.type == 'date'"/>
+
 		<textarea v-model="arr_form1[field.id]" class="form-control" v-else-if="field.type == 'textarea'"></textarea>
 
 		<select v-model="arr_form1[field.id]" class="form-control" v-else-if="field.type == 'select'">
@@ -109,6 +125,17 @@ export default {
 				<span class="input-group-text" id="basic-addon1">{{ field.type == 'currency' ? 'Rp.' : '+62' }}</span>
 			</div>
 			<input type="text" class="form-control" v-model="arr_form1[field.id]">
+		</div>
+
+		<div v-else-if="field.type == 'json_breakdown'">
+			<div v-for="(field1, index) in field.arr" :key="index" class="form-group ml-3">
+				<label>{{ field1.text }}</label>
+				<CustomTextInput
+					:arr_form="arr_form1[field.id]"
+					:field="field1"
+					type="second"
+					@onFormChanged="(arr) => $set(arr_form1, field.id, arr)"/>
+			</div>
 		</div>
 
 		<input type="text" v-model="arr_form1[field.id]" class="form-control" v-else/>

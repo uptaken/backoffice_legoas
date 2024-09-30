@@ -11,11 +11,11 @@ const base = new Base()
 // import { tableData } from "../../../tables/dataAdvancedtable";
 
 /**
- * Regency component
+ * Province & City component
  */
 export default {
     page: {
-      title: "Regency",
+      title: "Province & City",
       meta: [{ name: "description", content: appConfig.description }]
     },
     components: { Layout, PageHeader, CustomTable, },
@@ -26,9 +26,9 @@ export default {
         fields: [
           { id: "_id", text: 'ID', allow_add_edit: false, },
           { id: "province", text: 'Province', },
-					{ id: "city", text: 'Name', },
+					{ id: "city", text: 'City', },
         ],
-				remove_column_text: ['_id', 'regencies'],
+				remove_column_text: ['_id', 'province', 'city'],
       };
     },
     async created() {
@@ -38,15 +38,14 @@ export default {
 			// 	menu = JSON.parse(menu)
 			//
 			// this.title = menu.menuName
-      base.save_current_page('Regency', true)
+      base.save_current_page('Province & City', true)
     },
     methods: {
 			async onAdd(form){
-				form.city_name = form.regencies
-				form.province_name = form.province_foreign.province
-				// form.id = form.province_id
+				form.province_name = form.province
+				form.city_name = form.city
 				// form.id = moment().format('DDMMYYHHmmssSSS')
-				// delete form.province_id
+				delete form.province
 				// $('#please_wait_modal').modal('show')
 
 				var temp = {}
@@ -65,9 +64,10 @@ export default {
 					this.base.show_error("Server Error")
 			},
 			async onEdit(form){
-				form.city_name = form.regencies
-				form.province_name = form.province_foreign.province
-				form.id = form.province_id
+				form.province_name = form.province
+				form.city_name = form.city
+				form.id = form._id
+				// delete form.province
 				// $('#please_wait_modal').modal('show')
 
 				var temp = {}

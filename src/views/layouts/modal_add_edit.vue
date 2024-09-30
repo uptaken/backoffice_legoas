@@ -29,6 +29,7 @@ export default {
   watch: {
     arr_form: {
 			handler(newValue, oldValue) {
+
 				var arr = newValue
 				for(let x in arr){
 					var field_data = {}
@@ -44,17 +45,27 @@ export default {
 					else if(field_data.type == 'phone')
 						arr[x] = this.base.phone_validation(arr[x])
 				}
-				this.arr_form = arr
+
+				// this.arr_form = arr
 			},
 			deep: true,
 		},
 		data(val){
 			var arr_form = this.arr_form
 			for(let x in arr_form){
-				if(val._id != null){
-					for(let y in val){
+				if(this.data._id != null){
+					for(let y in this.data){
+						var field_data = {}
+						for(let field of this.fields){
+							if(field.id == y){
+								field_data = field
+								break
+							}
+						}
+
+
 						if(x == y){
-							arr_form[x] = val[y]
+							arr_form[x] = field_data.type == 'json_breakdown' ? JSON.parse(this.data[y]) : this.data[y]
 							break
 						}
 					}
@@ -62,6 +73,7 @@ export default {
 				else
 					arr_form[x] = ''
 			}
+
 			this.arr_form = arr_form
 		},
   },
@@ -70,11 +82,21 @@ export default {
 
 		var arr = {}
 		for(let data of this.fields){
-			arr[data.id] = ''
+			if(data.type == 'foreign_key')
+				arr[data.id + '_data'] = {}
+			arr[data.id] = data.type == 'json_breakdown' ? this.init_arr_form(data.arr) : ''
 		}
 		this.arr_form = arr
   },
   methods: {
+		init_arr_form(arr_field){
+			var arr = {}
+
+			for(let data of arr_field){
+				arr[data.id] = data.type == 'json_breakdown' ? this.init_arr_form(data.arr) : ''
+			}
+			return arr
+		},
     async onSubmit(){
 			var message = ''
 			for(let x in this.arr_form){
@@ -103,6 +125,7 @@ export default {
 			}
     },
 		onFormChanged(arr_form){
+			console.log(arr_form)
 			this.arr_form = arr_form
 		},
   }
@@ -127,6 +150,7 @@ export default {
 							<CustomTextInput
 								:arr_form="arr_form"
 								:field="field"
+								type="primary"
 								@onFormChanged="onFormChanged"/>
 						</div>
 					</div>
