@@ -10,6 +10,7 @@
 						<label class="m-0">Search</label>
 						<input type="text" class="form-control ml-1" v-model="search"/>
 					</div>
+					<button class="btn btn-danger ml-3" v-show="isSearchEngaged" @click="onResetAdvancedSearchClicked">Reset</button>
 				</div>
 
 				<div class="">
@@ -112,10 +113,25 @@ export default {
       totalRows: 1000,
       currentPage: 1,
       perPage: 10,
+			withPreloader: true,
       pageOptions: [10, 25, 50, 100],
 			collectionObj: null,
     };
   },
+	computed: {
+		isSearchEngaged(){
+			var flag = false
+			for(let x in this.arrAdvancedSearch){
+				if(this.arrAdvancedSearch[x] != '')
+					flag = true
+			}
+
+			if(this.search != '')
+				flag = true
+
+			return flag
+		},
+	},
   watch: {
 		// when choose action triggered
 		async action(val){
@@ -189,6 +205,7 @@ export default {
 		},
 		// when search typed
 		search(){
+			this.withPreloader = false
 			this.get_data()
 		},
 		// when advanced search triggered
@@ -323,6 +340,10 @@ export default {
 			this.currentPage = 1
 			this.arrAdvancedSearch = arr_search
 		},
+		onResetAdvancedSearchClicked(){
+			this.arrAdvancedSearch = {}
+			this.search = ''
+		},
 		async onRemoveSubmit(){
 			if(this.arr_index_delete.length >= 0 && this.action == 'delete'){
 				// $('#please_wait_modal').modal('show')
@@ -374,8 +395,10 @@ export default {
 					foreignCollectionObj = mongo.db(field.db).collection(field.collection)
 				}
 
+				var match = {}
+				match[field.foreign_column_id != null ? field.foreign_column_id : '_id'] = data[field.id]
 				var arr_foreign = await foreignCollectionObj.aggregate([
-					{ $match: { _id: data[field.id], }, },
+					{ $match: match, },
 				])
 				data[field.id + '_data'] = arr_foreign.length > 0 ? arr_foreign[0] : {}
 				data[field.id] = arr_foreign.length > 0 ? arr_foreign[0][field.foreign_column_name] : '-'
@@ -420,7 +443,8 @@ export default {
 				}
 			}
 
-			$('#please_wait_modal').modal('show')
+			if(this.withPreloader)
+				$('#please_wait_modal').modal('show')
 			// prepare for query, sort, and pagination for realm sdk
 			var pipeline = [
 				{ $match: query, },
@@ -451,11 +475,13 @@ export default {
 						data = this.manage_arr_data(data, field, foreignCollectionObj)
 				}
 			}
-			setTimeout(() => {
-				$('#please_wait_modal').modal('hide')
-			}, 500)
+			if(this.withPreloader)
+				setTimeout(() => {
+					$('#please_wait_modal').modal('hide')
+				}, 500)
 
 			this.arr = arr
+			this.withPreloader = true
 		},
   },
 };

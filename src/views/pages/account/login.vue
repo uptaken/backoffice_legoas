@@ -1,7 +1,6 @@
 <script>
 import { required, email } from "vuelidate/lib/validators";
 import moment from 'moment'
-import * as Realm from "realm-web"
 
 import {
   authMethods,
@@ -10,17 +9,7 @@ import {
 } from "@/state/helpers";
 import Base from "@/Utils/base";
 
-import {RequestAnonymous, } from "@/proto/authentication_pb.js"
-import {AuthenticationServiceClient, } from "@/proto/authentication_grpc_web_pb.js"
-
-import {HelloRequest, } from "@/proto/helloworld_pb.js"
-import {GreeterClient, GreeterPromiseClient } from "@/proto/helloworld_grpc_web_pb.js"
-
 const base = new Base()
-
-const {
-	BSON: { ObjectId },
-} = Realm;
 
 export default {
   data() {
@@ -65,48 +54,6 @@ export default {
     ...authMethods,
     ...authFackMethods,
     ...notificationMethods,
-		async test_grpc(){
-			var client = new AuthenticationServiceClient('http://20.198.220.250:50052', null, null);
-			const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
-			enableDevTools([
-				client,
-			]);
-
-
-			var request = new RequestAnonymous();
-			request.setPartnerCode('lgs');
-
-			client.anonymousToken(request, {
-				authorization: 'Basic YXV0aGVudGljYXRpb246c3VwZXJzZWNyZXQ=',
-				'content-type': 'application/grpc-web-text',
-			}, (err, response) => {
-				console.log(JSON.stringify(err))
-			})
-
-		},
-		async test_grpc1(){
-			var client = new GreeterClient('http://172.104.189.236:50052', null, {
-
-			});
-			const enableDevTools = window.__GRPCWEB_DEVTOOLS__ || (() => {});
-			enableDevTools([
-				client,
-			]);
-
-
-			var request = new HelloRequest();
-			request.setName('World bmqbebqwe qeqweq');
-
-			client.sayHello(request, {
-				Authorization: 'Basic YXV0aGVudGljYXRpb246c3VwZXJzZWNyZXQ=',
-				'one-time-password': 42,
-				test: 'test',
-				// 'content-type': 'application/grpc-web-text',
-			}, (err, response) => {
-				console.log(response)
-			})
-
-		},
 		async get_token(){
 			var response = await base.request(base.url_api + '/authentication/anonymous/lgs', 'post', {
 				// req: {

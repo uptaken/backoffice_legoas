@@ -87,6 +87,13 @@ export default {
 					menuUrl: '/role/user',
 					childMenu: [],
 				},
+				{
+					id: 1,
+					menuName: 'User',
+					menuIcon: 'ri-dashboard-line',
+					menuUrl: '/user',
+					childMenu: [],
+				},
 			],
 			base: null,
     };

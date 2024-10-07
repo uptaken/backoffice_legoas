@@ -59,35 +59,24 @@ export default class Base {
 	constructor() {
 		this.redirect_to_login()
 
-		// console.log(window.location.origin)
-		if(window.location.origin == "https://venust.com"){
-      this.host = "https://venust-api.quantumtri.com"
-			this.url_api1 = "https://gatewaydemo.legoas.co.id/v1"
-      this.url_api = this.host + "/api"
-    }
-    else if(window.location.origin == "https://venust-admin.quantumtri.com"){
-      this.host = "https://venust-api.quantumtri.com"
-			this.url_api1 = "https://gatewaydemo.legoas.co.id/v1"
-      this.url_api = this.host + "/api"
-    }
-    else if(window.location.origin == "http://localhost:8080"){
-			// this.host = "https://api.student-open.com"
-      this.host = "http://20.198.220.250:8080"
-			this.url_api1 = "https://gatewaydemo.legoas.co.id/v1"
-      this.url_api = this.host + "/v1"
-    }
+
+		// this.host = "https://api.student-open.com"
+    // this.host = "http://20.198.220.250:8080"
+		this.url_api1 = process.env.VUE_APP_BACKEND_URL
+    this.url_api = process.env.VUE_APP_BACKEND_ANONYMOUS_URL
+		this.locale_timezone = process.env.VUE_APP_DEFAULT_TZ
 	}
 
 	async connect_mongodb(){
-		const app = new Realm.App({ id: this.mongodb_app_id, timeout: 3600000, })
+		const app = new Realm.App({ id: process.env.VUE_APP_MONGODB_APP_ID, timeout: 3600000, })
 		if(app.currentUser == null){
-			if(this.mongodb_token != '')
-				await app.logIn(Realm.Credentials.apiKey(this.mongodb_token))
+			if(process.env.VUE_APP_MONGODB_TOKEN != '')
+				await app.logIn(Realm.Credentials.apiKey(process.env.VUE_APP_MONGODB_TOKEN))
 			else
-				await app.logIn(Realm.Credentials.emailPassword(this.mongodb_user_email, this.mongodb_user_password))
+				await app.logIn(Realm.Credentials.emailPassword(process.env.VUE_APP_MONGODB_USER_EMAIL, process.env.VUE_APP_MONGODB_USER_PASSWORD))
 		}
 
-		const mongo = app.currentUser.mongoClient(this.mongodb_service_name)
+		const mongo = app.currentUser.mongoClient(process.env.VUE_APP_MONGODB_SERVICE_NAME)
 
 		return mongo
 	}

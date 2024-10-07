@@ -9,6 +9,7 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 import VueYoutube from 'vue-youtube'
 import $ from 'jquery'
 import 'bootstrap'
+import 'dotenv/config'
 // import CKEditor from '@ckeditor/ckeditor5-vue2';
 
 import vco from "v-click-outside"
@@ -40,7 +41,7 @@ import { configureFakeBackend } from './helpers/fakebackend/fake-backend';
 //   appId: process.env.VUE_APP_APPId,
 //   measurementId: process.env.VUE_APP_MEASUREMENTID
 // };
-// 
+//
 // if (process.env.VUE_APP_DEFAULT_AUTH === "firebase") {
 //   initFirebaseBackend(firebaseConfig);
 // } else {

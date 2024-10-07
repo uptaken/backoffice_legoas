@@ -35,6 +35,8 @@ export default {
 					for(let foreign of this.arr_foreign){
 						if(foreign._id == newValue[this.field.id]){
 							newValue[this.field.foreign_column_name + '_foreign'] = foreign
+							// if(this.field.foreign_column_id != null)
+							// 	newValue[this.field.id] = foreign[this.field.foreign_column_id]
 							break
 						}
 					}
@@ -117,7 +119,8 @@ export default {
 		</select>
 
 		<select v-model="arr_form1[field.id]" class="form-control" v-else-if="field.type == 'foreign_key'">
-			<option v-for="(foreign, index) in arr_foreign" :key="index" :value="foreign._id">{{ foreign[field.foreign_column_name] }}</option>
+			<option value="">Choose Option</option>
+			<option v-for="(foreign, index) in arr_foreign" :key="index" :value="field.foreign_column_id != null ? foreign[field.foreign_column_id] : foreign._id">{{ foreign[field.foreign_column_name] }}</option>
 		</select>
 
 		<div class="input-group" v-else-if="field.type == 'currency' || field.type == 'phone'">

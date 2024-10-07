@@ -180,4 +180,11 @@ export default [
 				meta: { authRequired: true },
 				component: () => import('../views/pages/menu')
 		},
+
+		{
+				path: '/user',
+				name: 'User',
+				meta: { authRequired: true },
+				component: () => import('../views/pages/user')
+		},
 ]
