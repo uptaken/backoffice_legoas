@@ -59,7 +59,6 @@ export default class Base {
 	constructor() {
 		this.redirect_to_login()
 
-
 		// this.host = "https://api.student-open.com"
     // this.host = "http://20.198.220.250:8080"
 		this.url_api1 = process.env.VUE_APP_BACKEND_URL

@@ -41,9 +41,11 @@ export default {
 
 		var token = await window.localStorage.getItem('token')
 		var temp_token = await window.localStorage.getItem('temp_token')
-		if(token != null)
+		if(token != null){
 			this.get_profile()
-		else if(token == null && temp_token == null)
+			this.temp_token = temp_token
+		}
+		else if(token == null && temp_token == null && process.env.VUE_APP_BACKEND_URL != null)
 			this.get_token()
   },
   validations: {
@@ -64,6 +66,7 @@ export default {
       if (response != null) {
         if (response.data.code == 200) {
 					window.localStorage.setItem('temp_token', 'Bearer ' + response.arrCustomResponseHeader['grpc-metadata-token'])
+					this.temp_token = 'Bearer ' + response.arrCustomResponseHeader['grpc-metadata-token']
         }
         else
           base.show_error(response.data.message)
@@ -166,7 +169,7 @@ export default {
                           </div>
 
                           <div class="mt-4 text-center">
-                            <button class="btn text-white w-md waves-effect waves-light w-100" style="background-color: #FECA03;" type="submit">
+                            <button class="btn text-white w-md waves-effect waves-light w-100" style="background-color: #FECA03;" type="submit" :disabled="temp_token == ''">
                               <div v-show="!is_please_wait">
                                 Log In
                               </div>

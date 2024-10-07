@@ -32,11 +32,16 @@ export default {
     }
   },
   async created(){
+		this.base = new Base()
+
+		if(process.env.VUE_APP_BACKEND_URL == null){
+			this.base.show_error("env doesn't exist")
+		}
 
     // }
   },
   async mounted(){
-		this.base = new Base()
+
 
 		var token_expired = await window.localStorage.getItem('token_expired')
 		if(token_expired != null)
